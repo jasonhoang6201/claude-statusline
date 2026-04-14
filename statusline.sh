@@ -76,16 +76,17 @@ input=$(cat)
 MODEL=$(echo "$input" | jq -r '.model.display_name')
 CTX_SIZE=$(echo "$input" | jq -r '.context_window.context_window_size // 0')
 
-IN_TOKENS=$(echo "$input" | jq -r '.context_window.current_usage.input_tokens // 0')
-OUT_TOKENS=$(echo "$input" | jq -r '.context_window.current_usage.output_tokens // 0')
+IN_TOKENS=$(echo "$input" | jq -r '.context_window.total_input_tokens // 0')
+OUT_TOKENS=$(echo "$input" | jq -r '.context_window.total_output_tokens // 0')
 CACHE_TOKENS=$(echo "$input" | jq -r '
   (.context_window.current_usage.cache_creation_input_tokens // 0)
   + (.context_window.current_usage.cache_read_input_tokens // 0)')
 TOKENS_USED=$(( IN_TOKENS + OUT_TOKENS + CACHE_TOKENS ))
 
-PCT=$(echo "$TOKENS_USED $CTX_SIZE" | awk '{if($2>0) printf "%d", ($1/$2)*100; else print "0"}')
+PCT=$(echo "$input" | jq -r '.context_window.used_percentage // 0' | cut -d. -f1)
 FIVE_HR_PCT=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage  // 0' | cut -d. -f1)
 SEVEN_DAY_PCT=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // 0' | cut -d. -f1)
+
 
 # Reset countdowns
 NOW=$(date +%s)
