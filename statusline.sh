@@ -76,8 +76,8 @@ input=$(cat)
 MODEL=$(echo "$input" | jq -r '.model.display_name')
 CTX_SIZE=$(echo "$input" | jq -r '.context_window.context_window_size // 0')
 
-IN_TOKENS=$(echo "$input" | jq -r '.context_window.total_input_tokens // 0')
-OUT_TOKENS=$(echo "$input" | jq -r '.context_window.total_output_tokens // 0')
+IN_TOKENS=$(echo "$input" | jq -r '.context_window.current_usage.input_tokens // 0')
+OUT_TOKENS=$(echo "$input" | jq -r '.context_window.current_usage.output_tokens // 0')
 CACHE_TOKENS=$(echo "$input" | jq -r '
   (.context_window.current_usage.cache_creation_input_tokens // 0)
   + (.context_window.current_usage.cache_read_input_tokens // 0)')
